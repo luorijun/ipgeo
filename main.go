@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"net/netip"
 	"strings"
 
 	"github.com/lionsoul2014/ip2region/binding/golang/service"
@@ -30,13 +29,13 @@ func main() {
 
 	// 初始化 web 接口
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		addr, err := netip.ParseAddrPort(r.RemoteAddr)
+		bytes, err := json.Marshal(r.Header)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		w.Write([]byte(addr.Addr().String()))
+		w.Write(bytes)
 	})
 
 	http.HandleFunc("/{ip}", func(w http.ResponseWriter, r *http.Request) {
